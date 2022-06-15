@@ -19,5 +19,5 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "500m"
-        ports:
-        - containerPort: 8080
+        # ports:
+        # - containerPort: 8080

@@ -13,17 +13,20 @@ namespace PlatformService.Controllers{
         private readonly IPlatformRepo _platformRepo;
         private readonly IMapper _mapper;
         private readonly ICommandDataClient _commandDataClient;
+        private readonly ILogger<PlatformController> _logger;
 
-        public PlatformController(IPlatformRepo platformRepo, IMapper mapper, ICommandDataClient commandDataClient)
+        public PlatformController(IPlatformRepo platformRepo, IMapper mapper, 
+            ICommandDataClient commandDataClient, ILogger<PlatformController> logger)
         {
             _platformRepo = platformRepo;
             _mapper = mapper;
             _commandDataClient = commandDataClient;
+            _logger = logger;
         }
 
         [HttpGet]
         public ActionResult<IEnumerable<PlatformReadDto>> GetPlatforms() {
-            Console.WriteLine("--> Getting Platforms ...");
+            _logger.LogInformation("--> Getting Platforms ...");
             var allPlatforms = _platformRepo.GetAllPlatforms();
             return Ok(_mapper.Map<IEnumerable<PlatformReadDto>>(allPlatforms));
         }
@@ -42,7 +45,7 @@ namespace PlatformService.Controllers{
 
         [HttpPost]
         public async Task<ActionResult<PlatformReadDto>> CreatePlatform(PlatformCreateDto newPlatform){
-            Console.WriteLine("--> Creating a new Platform: "+newPlatform.Name+", "+newPlatform.Publisher);
+            _logger.LogInformation("--> Creating a new Platform: "+newPlatform.Name+", "+newPlatform.Publisher);
             if (newPlatform != null) {
                 var platformModel = _mapper.Map<Platform>(newPlatform);
                 _platformRepo.CreatePlatform(platformModel);
@@ -53,7 +56,7 @@ namespace PlatformService.Controllers{
                 try {
                     await _commandDataClient.SendPlatformToCommand(platformReadDto);
                 } catch(Exception ex){
-                    Console.WriteLine($"---> Could not send synchronously: {ex.Message}");
+                    _logger.LogError($"---> Could not send synchronously: {ex.Message}");
                 }
 
                 return CreatedAtRoute(nameof(GetPlatformById), new { Id = platformReadDto.Id }, platformReadDto );

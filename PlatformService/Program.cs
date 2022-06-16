@@ -18,7 +18,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IPlatformRepo, PlatformRepo>();
 
-builder.Services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();;
+builder.Services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
 
 if (builder.Environment.IsDevelopment()){
     Console.WriteLine("--> Generating swagger doc ...");
